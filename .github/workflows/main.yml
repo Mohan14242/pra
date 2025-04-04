@@ -1,0 +1,37 @@
+name: YouTube to Text Transcriber
+
+on:
+  workflow_dispatch:  # Manually trigger the workflow
+    inputs:
+      video_url:
+        description: "YouTube Video URL"
+        required: true
+
+jobs:
+  transcribe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set Up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install Dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y ffmpeg yt-dlp
+          pip install openai-whisper
+
+      - name: Run the Transcription Script
+        run: |
+          chmod +x youtube_to_text.sh
+          ./youtube_to_text.sh "${{ github.event.inputs.video_url }}"
+
+      - name: Upload Transcription
+        uses: actions/upload-artifact@v3
+        with:
+          name: transcription
+          path: ./downloads/downloaded_audio.mp3.txt
