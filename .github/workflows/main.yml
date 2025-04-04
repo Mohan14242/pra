@@ -32,7 +32,8 @@ jobs:
       - name: Download YouTube Audio
         run: |
           mkdir -p downloads
-          yt-dlp -x --audio-format mp3 --cookies cookies.txt -o "downloads/downloaded_audio.mp3" "${{ github.event.inputs.video_url }}"
+          yt-dlp -u "${{ secrets.YOUTUBE_USERNAME }}" -p "${{ secrets.YOUTUBE_PASSWORD }}" \
+            -x --audio-format mp3 -o "downloads/downloaded_audio.mp3" "${{ github.event.inputs.video_url }}"
 
       - name: Transcribe Audio with Whisper
         run: |
