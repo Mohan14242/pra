@@ -1,7 +1,7 @@
 name: YouTube to Text Transcriber
 
 on:
-  workflow_dispatch:  # Manually trigger the workflow
+  workflow_dispatch:
     inputs:
       video_url:
         description: "YouTube Video URL"
@@ -29,13 +29,17 @@ jobs:
         run: |
           echo "${{ secrets.YOUTUBE_COOKIES }}" > cookies.txt
 
-      - name: Run the Transcription Script
+      - name: Download YouTube Audio
         run: |
-          chmod +x youtube_to_text.sh
-          ./youtube_to_text.sh "${{ github.event.inputs.video_url }}"
+          mkdir -p downloads
+          yt-dlp -x --audio-format mp3 --cookies cookies.txt -o "downloads/downloaded_audio.mp3" "${{ github.event.inputs.video_url }}"
 
-      - name: Upload Transcription
+      - name: Transcribe Audio with Whisper
+        run: |
+          whisper "downloads/downloaded_audio.mp3" --language English --output_dir "downloads" --output_format txt
+
+      - name: Upload Audio & Transcription
         uses: actions/upload-artifact@v4
         with:
-          name: transcription
-          path: ./downloads/downloaded_audio.mp3.txt
+          name: transcription_results
+          path: downloads/
