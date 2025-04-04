@@ -22,25 +22,17 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt update
-          sudo apt install -y ffmpeg yt-dlp
-          pip install openai-whisper
+          sudo apt install -y ffmpeg
+          pip install pytube openai-whisper
 
-      - name: Retrieve Cookies from Secret
+      - name: Download YouTube Audio using Pytube
         run: |
-          echo "${{ secrets.YOUTUBE_COOKIES }}" > cookies.txt
-
-      - name: Download YouTube Audio
-        run: |
-          mkdir -p downloads
-          yt-dlp -u "${{ secrets.YOUTUBE_USERNAME }}" -p "${{ secrets.YOUTUBE_PASSWORD }}" \
-            -x --audio-format mp3 -o "downloads/downloaded_audio.mp3" "${{ github.event.inputs.video_url }}"
-
-      - name: Transcribe Audio with Whisper
-        run: |
-          whisper "downloads/downloaded_audio.mp3" --language English --output_dir "downloads" --output_format txt
-
-      - name: Upload Audio & Transcription
+           python download_audio.py "${{ github.event.inputs.video_url }}"
+      - name: Upload Downloaded Audio
         uses: actions/upload-artifact@v4
         with:
-          name: transcription_results
-          path: downloads/
+          name: downloaded_audio
+          path: downloads/downloaded_audio.mp3
+
+
+      
