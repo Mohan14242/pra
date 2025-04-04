@@ -20,7 +20,7 @@ pip install openai-whisper
 
 # Download YouTube audio
 echo "Downloading audio from YouTube..."
-yt-dlp -x --audio-format mp3 -o "$AUDIO_FILE" "$1"
+yt-dlp -x --audio-format mp3 --cookies ~/cookies.txt -o "$AUDIO_FILE" "$1"
 
 # Check if the audio file was created
 if [ ! -f "$AUDIO_FILE" ]; then
