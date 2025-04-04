@@ -31,7 +31,7 @@ jobs:
           ./youtube_to_text.sh "${{ github.event.inputs.video_url }}"
 
       - name: Upload Transcription
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: transcription
           path: ./downloads/downloaded_audio.mp3.txt
